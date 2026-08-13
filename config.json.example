@@ -1,0 +1,23 @@
+{
+  "port": 5000,
+  "batchTimeoutMs": 10000,
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "user": "YOUR_EMAIL@gmail.com",
+    "pass": "YOUR_APP_PASSWORD",
+    "from": "YOUR_EMAIL@gmail.com",
+    "to": "RECIPIENT_EMAIL@example.com"
+  },
+  "subnets": [
+    { "name": "Infrastructure", "cidr": "172.18.141.0/24" },
+    { "name": "Home A", "cidr": "172.18.139.0/24" },
+    { "name": "Home B", "cidr": "172.31.20.0/24" },
+    { "name": "Home C", "cidr": "172.31.30.0/24" },
+    { "name": "Guests", "cidr": "172.31.40.0/24" },
+    { "name": "Cameras", "cidr": "172.18.142.0/24" },
+    { "name": "IOT", "cidr": "172.18.143.0/24" }
+  ],
+  "excludeFromTop10": []
+}

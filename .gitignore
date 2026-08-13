@@ -1,0 +1,9 @@
+node_modules/
+config.json
+data/
+*.log
+.env
+ervice -n 20 --no-pager
+old.txt
+new.txt
+test-parser.js
