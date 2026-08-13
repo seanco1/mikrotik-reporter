@@ -116,21 +116,69 @@ curl http://localhost:5000/status
 
 ---
 
-## 🤖 RouterOS Integration Example
+## 🤖 RouterOS Integration Example ("Report" Script)
 
-On your Mikrotik Router, you can use a script to loop over `/ip kid-control device` or host leases and send usage data to the webhook:
+Add the following RouterOS script (e.g., named `Report`) on your Mikrotik router (tested on RouterOS v7) and run it via `/system scheduler` periodically:
 
 ```routeros
-:local batchId ("batch-" . [/system clock get date] . "-" . [/system clock get time]);
-:local totalCount 1;
+# 1. Dynamically find only devices with active traffic
+:local activeDevices [/ip/kid-control/device find where bytes-down>0 or bytes-up>0]
+:local totalCount [:len $activeDevices]
 
-/tool fetch url="http://YOUR_SERVER_IP:5000/webhook" \
-  http-method=post \
-  http-header-field="Content-Type: application/json,X-Batch-ID: $batchId,X-Total-Count: $totalCount" \
-  http-data="{\"name\":\"DeviceName\",\"mac\":\"00:00:00:00:00:00\",\"ips\":\"192.168.88.10\",\"total_mb\":250.5}"
+# 2. If no devices have traffic log it and stop
+:if ($totalCount = 0) do={
+    :log info "Kid-control report skipped: No devices have active data usage."
+    :error "Stopping script: No active devices found."
+}
+
+# 3. Create a unique Batch ID
+:local systemTime [/system/clock/get time]
+:local systemDate [/system/clock/get date]
+:local batchId ($systemDate . "-" . $systemTime)
+
+:log info "Starting kid-control data streaming. Streaming active items."
+
+# 4. Iterate through active devices
+:foreach i in=$activeDevices do={
+    :local mac [/ip/kid-control/device get $i mac-address]
+    :local name [/ip/kid-control/device get $i name]
+    :local devIPs [/ip/kid-control/device get $i ip-address]
+    
+    # Standardize empty names
+    :if ([:len $name] = 0) do={ :set name "Unknown" }
+    
+    # Convert raw bytes safely to Megabytes
+    :local downBytes [/ip/kid-control/device get $i bytes-down]
+    :local upBytes [/ip/kid-control/device get $i bytes-up]
+    :local totalMB (($downBytes / 1048576) + ($upBytes / 1048576))
+    
+    # Process multiple IPs into a semicolon string (IPv4 only)
+    :local ipString ""
+    :foreach ip in=$devIPs do={
+        :local ipStr [:tostr $ip]
+        :if ([:typeof [:find $ipStr ":"]] = "nil") do={
+            :if ([:len $ipString] = 0) do={ :set ipString $ipStr } else={ :set ipString ($ipString . ";" . $ipStr) }
+        }
+    }
+    :if ([:len $ipString] = 0) do={ :set ipString "no-ip" }
+
+    # Generate JSON payload for single device
+    :local singlePayload "{\"name\":\"$name\",\"mac\":\"$mac\",\"ips\":\"$ipString\",\"total_mb\":\"$totalMB\"}"
+    
+    # Define custom headers for RouterOS v7
+    :local httpHeaders "X-Batch-ID:$batchId,X-Total-Count:$totalCount,Content-Type:application/json"
+
+    # POST directly to mikrotik-reporter webhook (adjust server IP / port)
+    /tool fetch url="http://YOUR_SERVER_IP:5000/webhook" http-method=post http-data=$singlePayload http-header-field=$httpHeaders keep-result=no;
+    
+    :delay 100ms
+}
+
+:log info "All active kid-control data entries streamed successfully."
 ```
 
 ---
+
 
 ## 📄 License
 
