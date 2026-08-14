@@ -16,9 +16,7 @@ A Node.js service that receives aggregated bandwidth usage reports from Mikrotik
 - 🏆 **Top Usage Tracking & Exclusion Filtering**: Ranks top bandwidth-consuming devices while allowing specific IP subnets to be excluded from top lists.
 - 📧 **Beautiful HTML Email Reports**: Sends styled, responsive HTML email summaries with visual bandwidth bars via Nodemailer SMTP.
 - 💾 **Local Report Archiving**: Saves generated HTML and JSON data payloads locally to disk (`./data/`).
-- 🔍 **Status API Endpoint**: Exposes a GET `/status` endpoint to monitor current batch queues and saved reports.
 
----
 
 ## 🛠️ Installation & Setup
 
