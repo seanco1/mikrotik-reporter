@@ -1,5 +1,9 @@
 # Mikrotik KidControl Bandwidth Reporter 📊
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js 18+](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![RouterOS v7](https://img.shields.io/badge/RouterOS-v7.x-orange.svg)](https://mikrotik.com/download)
+
 A Node.js service that receives aggregated bandwidth usage reports from Mikrotik routers running RouterOS scripts (such as Kid Control data), groups total consumption by configured subnets/VLANs, highlights top bandwidth consumers, and sends formatted HTML email summaries via SMTP.
 
 ---
