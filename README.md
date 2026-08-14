@@ -17,6 +17,14 @@ A Node.js service that receives aggregated bandwidth usage reports from Mikrotik
 - 📧 **Beautiful HTML Email Reports**: Sends styled, responsive HTML email summaries with visual bandwidth bars via Nodemailer SMTP.
 - 💾 **Local Report Archiving**: Saves generated HTML and JSON data payloads locally to disk (`./data/`).
 
+---
+
+## 📷 Screenshots
+
+| Subnet Bandwidth Report | Top 10 Consumers |
+| :---: | :---: |
+| ![Bandwidth Report](images/Report.png) | ![Top 10 Consumers](images/Top10.png) |
+
 
 ## 🛠️ Installation & Setup
 
